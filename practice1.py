@@ -1,10 +1,9 @@
-import os 
-basedir = os.path.abspath(os.path.dirname(__file__)) 
-
+import os
+import prac_gridfs.py 
 from telegram.ext import Updater, CommandHandler
 from instance.credential import *
 
-#사진 보내는 코드 bot.send_photo(chat_id=update.message.chat_id, photo='이미지 주소')
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 def check_id(bot, update):
 	try:
