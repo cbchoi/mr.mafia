@@ -185,6 +185,7 @@ class Editor(Parent):
         update.message.reply_text('이미 있는 카테고리 이름입니다. 아무내용이나 입력하면 재실행합니다.')
         user_state_map[update.message.chat_id] = {}
         user_state_map[update.message.chat_id] = 'check_category_name'
+        return self.name[update.message.chat_id]
     if update.message.text=='/cancel':
       self.cancel(bot,update)
     update.message.reply_text(text="사진을 전송해주세요.")
@@ -312,7 +313,7 @@ class Editor(Parent):
   def delete_category(self,bot,update):
     self.name[update.message.chat_id] = update.message.text
     collection = db.get_collection(str(update.message.chat_id))
-    result = collection.find_one({"name":self.name})
+    result = collection.find_one({"name":self.name[update.message.chat_id]})
     if result == None:
       update.message.reply_text('잘못입력하셨습니다. 아무내용이나 입력하여 계속 진행해주세요.')
       user_state_map[update.message.chat_id] = 'user_input_delete_category'
@@ -369,14 +370,14 @@ class Editor(Parent):
       self.cancel(bot,update)
     collection = db.get_collection(str(update.message.chat_id))
     collection.delete_one({"name":self.name[update.message.chat_id]})
-    self.photos.pop(int(number)-1)
+    self.photos[update.message.chat_id].pop(int(number)-1)
     collection.insert_one({"name":self.name[update.message.chat_id], 
                         "Item":self.photos[update.message.chat_id]})
     update.message.reply_text('삭제되었습니다.')
     bot.send_message(chat_id=update.message.chat_id, 
                     text='원하는 메뉴를 입력해주세요 ex./make, /select or /delete\
                     \n1.Make category\n2.Select category\n3.Delete category')
-    self.photos[update.message.chat_id], self.name = list(), None
+    self.photos[update.message.chat_id], self.name[update.message.chat_id] = list(), None
 
 def CustomMessageDispatcher(bot, update):
   global play
